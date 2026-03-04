@@ -1,12 +1,12 @@
 import type { UserRole } from "../types/auth";
 
-export type AppFeature = "dashboard" | "data-entry" | "analytics" | "water-quality" | "user-management";
+export type AppFeature = "lab" | "assets" | "user-management";
 
 const ROLE_FEATURES: Record<UserRole, AppFeature[]> = {
-  admin: ["dashboard", "data-entry", "analytics", "water-quality", "user-management"],
-  engineer: ["dashboard", "analytics", "water-quality", "user-management"],
-  operator: ["dashboard", "data-entry", "analytics", "water-quality"],
-  chemist: ["dashboard", "data-entry", "water-quality"],
+  admin: ["lab", "assets", "user-management"],
+  engineer: ["lab", "assets"],
+  operator: ["lab", "assets"],
+  chemist: ["lab"],
 };
 
 export const canAccessFeature = (role: UserRole, feature: AppFeature) =>

@@ -76,3 +76,51 @@ export const register = async (payload: RegisterPayload) => {
   }
   return data;
 };
+
+const getAuthHeaders = () => {
+  const session = getSession();
+  if (!session?.token) {
+    throw new Error("You are not authenticated");
+  }
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${session.token}`,
+  };
+};
+
+export const getAllUsers = async (): Promise<AuthUser[]> => {
+  const response = await fetch(`${API_BASE_URL}/api/users/all`, {
+    headers: getAuthHeaders(),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data?.msg ?? "Failed to load users");
+  }
+  return data as AuthUser[];
+};
+
+export const adminCreateUser = async (payload: RegisterPayload) => {
+  const response = await fetch(`${API_BASE_URL}/api/users/admin-create`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(payload),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data?.error?.[0]?.msg ?? data?.errors?.[0]?.msg ?? data?.msg ?? "Failed to create user");
+  }
+  return data;
+};
+
+export const changePassword = async (currentPassword: string, newPassword: string) => {
+  const response = await fetch(`${API_BASE_URL}/api/users/change-password`, {
+    method: "PUT",
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data?.error?.[0]?.msg ?? data?.errors?.[0]?.msg ?? data?.msg ?? "Failed to change password");
+  }
+  return data;
+};

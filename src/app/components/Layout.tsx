@@ -11,40 +11,37 @@ import {
   Menu,
   LogOut,
 } from 'lucide-react';
-
-interface User {
-  username: string;
-  role: 'operator' | 'viewer';
-  isAuthenticated: boolean;
-}
+import { clearSession, getSession } from '../lib/auth';
+import { canAccessFeature } from '../lib/roles';
+import type { SessionState } from '../types/auth';
 
 export function Layout() {
   const navigate = useNavigate();
-  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<SessionState | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (!storedUser) {
+    const currentSession = getSession();
+    if (!currentSession?.isAuthenticated) {
       navigate('/login');
     } else {
-      setUser(JSON.parse(storedUser));
+      setSession(currentSession);
     }
   }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
+    clearSession();
     navigate('/login');
   };
 
-  if (!user) return null;
+  if (!session?.user) return null;
 
   const navItems = [
-    { to: '/', label: 'Dashboard', icon: LayoutDashboard, allowedRoles: ['operator', 'viewer'] },
-    { to: '/data-entry', label: 'Data Entry', icon: FileInput, allowedRoles: ['operator'] },
-    { to: '/analytics', label: 'Analytics', icon: BarChart3, allowedRoles: ['operator', 'viewer'] },
-    { to: '/water-quality', label: 'Water Quality', icon: Waves, allowedRoles: ['operator', 'viewer'] },
-  ].filter(item => item.allowedRoles.includes(user.role));
+    { to: '/', label: 'Dashboard', icon: LayoutDashboard, feature: 'dashboard' as const },
+    { to: '/data-entry', label: 'Data Entry', icon: FileInput, feature: 'data-entry' as const },
+    { to: '/analytics', label: 'Analytics', icon: BarChart3, feature: 'analytics' as const },
+    { to: '/water-quality', label: 'Water Quality', icon: Waves, feature: 'water-quality' as const },
+  ].filter((item) => canAccessFeature(session.user.role, item.feature));
 
   const NavContent = () => (
     <>
@@ -54,7 +51,7 @@ export function Layout() {
         </div>
         <div className="flex-1">
           <h1 className="font-semibold">Ismailia Water Treatment Plant</h1>
-          <p className="text-sm text-gray-600">{user.username}</p>
+          <p className="text-sm text-gray-600">{session.user.name}</p>
         </div>
       </div>
       
@@ -82,7 +79,7 @@ export function Layout() {
       <div className="p-4 border-t">
         <div className="mb-3 px-3 py-2 bg-blue-50 rounded-lg">
           <p className="text-xs text-gray-600">Role</p>
-          <p className="font-medium text-sm capitalize">{user.role}</p>
+          <p className="font-medium text-sm capitalize">{session.user.role}</p>
         </div>
         <Button 
           variant="outline" 

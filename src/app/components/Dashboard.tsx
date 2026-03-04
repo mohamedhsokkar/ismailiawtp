@@ -11,6 +11,7 @@ import {
   Clock,
 } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { getSession } from '../lib/auth';
 
 // Mock data
 const generateMockData = () => {
@@ -31,14 +32,12 @@ const generateMockData = () => {
 };
 
 export function Dashboard() {
-  const [user, setUser] = useState<any>(null);
+  const [userName, setUserName] = useState<string>('');
   const [chartData] = useState(generateMockData());
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    const session = getSession();
+    if (session?.user?.name) setUserName(session.user.name);
   }, []);
 
   const metrics = [
@@ -105,7 +104,7 @@ export function Dashboard() {
       <div>
         <h1>Dashboard</h1>
         <p className="text-gray-600 mt-1">
-          Welcome back, {user?.username}. Here's your water treatment overview.
+          Welcome back, {userName || 'User'}. Here's your water treatment overview.
         </p>
       </div>
 

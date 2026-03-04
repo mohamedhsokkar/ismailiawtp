@@ -5,6 +5,7 @@ import { Dashboard } from "./components/Dashboard";
 import { DataEntry } from "./components/DataEntry";
 import { Analytics } from "./components/Analytics";
 import { WaterQuality } from "./components/WaterQuality";
+import { RequireFeature } from "./components/RequireFeature";
 
 export const router = createHashRouter([
   {
@@ -15,10 +16,38 @@ export const router = createHashRouter([
     path: "/",
     element: <Layout />,
     children: [
-      { index: true, element: <Dashboard /> },
-      { path: "data-entry", element: <DataEntry /> },
-      { path: "analytics", element: <Analytics /> },
-      { path: "water-quality", element: <WaterQuality /> },
+      {
+        index: true,
+        element: (
+          <RequireFeature feature="dashboard">
+            <Dashboard />
+          </RequireFeature>
+        ),
+      },
+      {
+        path: "data-entry",
+        element: (
+          <RequireFeature feature="data-entry">
+            <DataEntry />
+          </RequireFeature>
+        ),
+      },
+      {
+        path: "analytics",
+        element: (
+          <RequireFeature feature="analytics">
+            <Analytics />
+          </RequireFeature>
+        ),
+      },
+      {
+        path: "water-quality",
+        element: (
+          <RequireFeature feature="water-quality">
+            <WaterQuality />
+          </RequireFeature>
+        ),
+      },
     ],
   },
 ]

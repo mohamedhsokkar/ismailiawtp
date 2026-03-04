@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createHashRouter } from "react-router";
 import { Layout } from "./components/Layout";
 import { Login } from "./components/Login";
 import { Dashboard } from "./components/Dashboard";
@@ -6,7 +6,7 @@ import { DataEntry } from "./components/DataEntry";
 import { Analytics } from "./components/Analytics";
 import { WaterQuality } from "./components/WaterQuality";
 
-export const router = createBrowserRouter([
+export const router = createHashRouter([
   {
     path: "/login",
     element: <Login />,
@@ -21,4 +21,6 @@ export const router = createBrowserRouter([
       { path: "water-quality", element: <WaterQuality /> },
     ],
   },
-]);
+]
+
+);

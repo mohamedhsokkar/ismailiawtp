@@ -53,7 +53,7 @@ export function Layout() {
           <Droplets className="w-6 h-6 text-white" />
         </div>
         <div className="flex-1">
-          <h1 className="font-semibold">Water Treatment</h1>
+          <h1 className="font-semibold">Ismailia Water Treatment Plant</h1>
           <p className="text-sm text-gray-600">{user.username}</p>
         </div>
       </div>

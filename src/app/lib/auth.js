@@ -1,5 +1,24 @@
 const SESSION_KEY = "session";
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://91.121.41.232:4000";
+//const DEV_API_BASE_URL = "http://91.121.41.232:4000";
+const DEV_API_BASE_URL = "https://api.iwtp.online";
+
+
+
+const resolveApiBaseUrl = () => {
+  const configured = import.meta.env.VITE_API_BASE_URL?.trim();
+  if (configured) return configured.replace(/\/$/, "");
+
+  if (typeof window !== "undefined") {
+    const { hostname } = window.location;
+    if (hostname === "localhost" || hostname === "127.0.0.1") {
+      return "http://localhost:4000";
+    }
+  }
+
+  return DEV_API_BASE_URL;
+};
+
+const API_BASE_URL = resolveApiBaseUrl();
 const parseSession = (raw) => {
   if (!raw) return null;
   try {
@@ -42,6 +61,7 @@ const login = async (email, password) => {
   setSession(session);
   return session;
 };
+
 const register = async (payload) => {
   const response = await fetch(`${API_BASE_URL}/api/users/register`, {
     method: "POST",
@@ -54,6 +74,7 @@ const register = async (payload) => {
   }
   return data;
 };
+
 const getAuthHeaders = () => {
   const session = getSession();
   if (!session?.token) {

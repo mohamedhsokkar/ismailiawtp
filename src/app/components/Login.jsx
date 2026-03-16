@@ -12,9 +12,10 @@ import { login, register } from "../lib/auth";
 import { toast } from "sonner";
 function Login() {
   const navigate = useNavigate();
-  const [loginForm, setLoginForm] = useState({ email: "", password: "" });
+  const [loginForm, setLoginForm] = useState({ workID: "", password: "" });
   const [registerForm, setRegisterForm] = useState({
     name: "",
+    workID: "",
     email: "",
     password: "",
     nationalID: "",
@@ -25,7 +26,7 @@ function Login() {
     e.preventDefault();
     setLoading(true);
     try {
-      await login(loginForm.email, loginForm.password);
+      await login(loginForm.workID, loginForm.password);
       navigate("/");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Unable to sign in");
@@ -39,7 +40,7 @@ function Login() {
     try {
       await register(registerForm);
       toast.success("User created. You can now sign in.");
-      setLoginForm({ email: registerForm.email, password: "" });
+      setLoginForm({ workID: registerForm.workID, password: "" });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Unable to register");
     } finally {
@@ -59,15 +60,15 @@ function Login() {
       ] }),
       /* @__PURE__ */ jsx(TabsContent, { value: "sign-in", children: /* @__PURE__ */ jsxs("form", { onSubmit: handleLogin, className: "space-y-4", children: [
         /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsx(Label, { htmlFor: "email", children: "Email" }),
+          /* @__PURE__ */ jsx(Label, { htmlFor: "work-id", children: "Work ID" }),
           /* @__PURE__ */ jsx(
             Input,
             {
-              id: "email",
-              type: "email",
-              placeholder: "Enter email",
-              value: loginForm.email,
-              onChange: (e) => setLoginForm((prev) => ({ ...prev, email: e.target.value })),
+              id: "work-id",
+              type: "number",
+              placeholder: "Enter work ID",
+              value: loginForm.workID,
+              onChange: (e) => setLoginForm((prev) => ({ ...prev, workID: e.target.value })),
               required: true
             }
           )
@@ -103,15 +104,28 @@ function Login() {
           )
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "register-work-id", children: "Work ID" }),
+          /* @__PURE__ */ jsx(
+            Input,
+            {
+              id: "register-work-id",
+              type: "number",
+              value: registerForm.workID,
+              onChange: (e) => setRegisterForm((prev) => ({ ...prev, workID: e.target.value })),
+              required: true
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
           /* @__PURE__ */ jsx(Label, { htmlFor: "register-email", children: "Email" }),
           /* @__PURE__ */ jsx(
             Input,
             {
               id: "register-email",
               type: "email",
+              placeholder: "Optional",
               value: registerForm.email,
-              onChange: (e) => setRegisterForm((prev) => ({ ...prev, email: e.target.value })),
-              required: true
+              onChange: (e) => setRegisterForm((prev) => ({ ...prev, email: e.target.value }))
             }
           )
         ] }),
@@ -132,15 +146,15 @@ function Login() {
           /* @__PURE__ */ jsx(Label, { htmlFor: "national-id", children: "National ID" }),
           /* @__PURE__ */ jsx(
             Input,
-            {
-              id: "national-id",
-              type: "text",
-              value: registerForm.nationalID,
-              onChange: (e) => setRegisterForm((prev) => ({ ...prev, nationalID: e.target.value })),
-              required: true
-            }
-          )
-        ] }),
+              {
+                id: "national-id",
+                type: "text",
+                placeholder: "Optional",
+                value: registerForm.nationalID,
+                onChange: (e) => setRegisterForm((prev) => ({ ...prev, nationalID: e.target.value }))
+              }
+            )
+          ] }),
         /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
           /* @__PURE__ */ jsx(Label, { htmlFor: "register-role", children: "Role" }),
           /* @__PURE__ */ jsxs(

@@ -15,6 +15,7 @@ function Users() {
   const [loading, setLoading] = useState(false);
   const [createForm, setCreateForm] = useState({
     name: "",
+    workID: "",
     email: "",
     password: "",
     nationalID: "",
@@ -42,6 +43,7 @@ function Users() {
       toast.success("User created successfully");
       setCreateForm({
         name: "",
+        workID: "",
         email: "",
         password: "",
         nationalID: "",
@@ -73,13 +75,15 @@ function Users() {
         /* @__PURE__ */ jsx(CardContent, { children: /* @__PURE__ */ jsx("div", { className: "rounded-md border", children: /* @__PURE__ */ jsxs(Table, { children: [
           /* @__PURE__ */ jsx(TableHeader, { children: /* @__PURE__ */ jsxs(TableRow, { children: [
             /* @__PURE__ */ jsx(TableHead, { children: "Name" }),
+            /* @__PURE__ */ jsx(TableHead, { children: "Work ID" }),
             /* @__PURE__ */ jsx(TableHead, { children: "Email" }),
             /* @__PURE__ */ jsx(TableHead, { children: "Role" }),
             /* @__PURE__ */ jsx(TableHead, { children: "National ID" })
           ] }) }),
-          /* @__PURE__ */ jsx(TableBody, { children: users.length === 0 ? /* @__PURE__ */ jsx(TableRow, { children: /* @__PURE__ */ jsx(TableCell, { colSpan: 4, className: "text-center py-8 text-gray-500", children: loading ? "Loading users..." : "No users found" }) }) : users.map((user) => /* @__PURE__ */ jsxs(TableRow, { children: [
+          /* @__PURE__ */ jsx(TableBody, { children: users.length === 0 ? /* @__PURE__ */ jsx(TableRow, { children: /* @__PURE__ */ jsx(TableCell, { colSpan: 5, className: "text-center py-8 text-gray-500", children: loading ? "Loading users..." : "No users found" }) }) : users.map((user) => /* @__PURE__ */ jsxs(TableRow, { children: [
             /* @__PURE__ */ jsx(TableCell, { children: user.name }),
-            /* @__PURE__ */ jsx(TableCell, { children: user.email }),
+            /* @__PURE__ */ jsx(TableCell, { children: user.workID ?? "-" }),
+            /* @__PURE__ */ jsx(TableCell, { children: user.email ?? "-" }),
             /* @__PURE__ */ jsx(TableCell, { className: "capitalize", children: user.role }),
             /* @__PURE__ */ jsx(TableCell, { children: user.nationalID ?? "-" })
           ] }, user._id)) })
@@ -104,6 +108,19 @@ function Users() {
             )
           ] }),
           /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsx(Label, { htmlFor: "new-user-work-id", children: "Work ID" }),
+            /* @__PURE__ */ jsx(
+              Input,
+              {
+                id: "new-user-work-id",
+                type: "number",
+                value: createForm.workID,
+                onChange: (e) => setCreateForm((prev) => ({ ...prev, workID: e.target.value })),
+                required: true
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
             /* @__PURE__ */ jsx(Label, { htmlFor: "new-user-email", children: "Email" }),
             /* @__PURE__ */ jsx(
               Input,
@@ -111,8 +128,8 @@ function Users() {
                 id: "new-user-email",
                 type: "email",
                 value: createForm.email,
-                onChange: (e) => setCreateForm((prev) => ({ ...prev, email: e.target.value })),
-                required: true
+                placeholder: "Optional",
+                onChange: (e) => setCreateForm((prev) => ({ ...prev, email: e.target.value }))
               }
             )
           ] }),
@@ -136,8 +153,8 @@ function Users() {
               {
                 id: "new-user-national-id",
                 value: createForm.nationalID,
-                onChange: (e) => setCreateForm((prev) => ({ ...prev, nationalID: e.target.value })),
-                required: true
+                placeholder: "Optional",
+                onChange: (e) => setCreateForm((prev) => ({ ...prev, nationalID: e.target.value }))
               }
             )
           ] }),

@@ -35,11 +35,11 @@ const setSession = (session) => {
 const authHeaders = (token) => ({
   Authorization: `Bearer ${token}`
 });
-const login = async (email, password) => {
+const login = async (workID, password) => {
   const loginResponse = await fetch(`${API_BASE_URL}/api/users/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify({ workID, password })
   });
   const loginData = await loginResponse.json();
   if (!loginResponse.ok) {

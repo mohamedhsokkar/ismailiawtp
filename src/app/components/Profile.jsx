@@ -53,6 +53,10 @@ function Profile() {
             /* @__PURE__ */ jsx(Input, { value: session?.user?.name ?? "", disabled: true })
           ] }),
           /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx(Label, { children: "Work ID" }),
+            /* @__PURE__ */ jsx(Input, { value: session?.user?.workID?.toString() ?? "", disabled: true })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { children: [
             /* @__PURE__ */ jsx(Label, { children: "Email" }),
             /* @__PURE__ */ jsx(Input, { value: session?.user?.email ?? "", disabled: true })
           ] }),

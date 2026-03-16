@@ -13,6 +13,7 @@ function UsersCreate() {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name: "",
+    workID: "",
     email: "",
     password: "",
     nationalID: "",
@@ -50,6 +51,19 @@ function UsersCreate() {
         )
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+        /* @__PURE__ */ jsx(Label, { htmlFor: "new-user-work-id", children: "Work ID" }),
+        /* @__PURE__ */ jsx(
+          Input,
+          {
+            id: "new-user-work-id",
+            type: "number",
+            value: form.workID,
+            onChange: (e) => setForm((prev) => ({ ...prev, workID: e.target.value })),
+            required: true
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
         /* @__PURE__ */ jsx(Label, { htmlFor: "new-user-email", children: "Email" }),
         /* @__PURE__ */ jsx(
           Input,
@@ -57,8 +71,8 @@ function UsersCreate() {
             id: "new-user-email",
             type: "email",
             value: form.email,
-            onChange: (e) => setForm((prev) => ({ ...prev, email: e.target.value })),
-            required: true
+            placeholder: "Optional",
+            onChange: (e) => setForm((prev) => ({ ...prev, email: e.target.value }))
           }
         )
       ] }),
@@ -82,8 +96,8 @@ function UsersCreate() {
           {
             id: "new-user-national-id",
             value: form.nationalID,
-            onChange: (e) => setForm((prev) => ({ ...prev, nationalID: e.target.value })),
-            required: true
+            placeholder: "Optional",
+            onChange: (e) => setForm((prev) => ({ ...prev, nationalID: e.target.value }))
           }
         )
       ] }),

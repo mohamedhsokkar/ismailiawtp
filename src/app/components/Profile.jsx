@@ -57,8 +57,8 @@ function Profile() {
             /* @__PURE__ */ jsx(Input, { value: session?.user?.workID?.toString() ?? "", disabled: true })
           ] }),
           /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsx(Label, { children: "Email" }),
-            /* @__PURE__ */ jsx(Input, { value: session?.user?.email ?? "", disabled: true })
+            /* @__PURE__ */ jsx(Label, { children: "Mobile Number" }),
+            /* @__PURE__ */ jsx(Input, { value: session?.user?.mobileNumber ?? "", disabled: true })
           ] }),
           /* @__PURE__ */ jsxs("div", { children: [
             /* @__PURE__ */ jsx(Label, { children: "Role" }),

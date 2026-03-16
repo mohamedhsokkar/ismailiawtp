@@ -14,7 +14,7 @@ function UsersCreate() {
   const [form, setForm] = useState({
     name: "",
     workID: "",
-    email: "",
+    mobileNumber: "",
     password: "",
     nationalID: "",
     role: "operator"
@@ -64,15 +64,16 @@ function UsersCreate() {
         )
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-        /* @__PURE__ */ jsx(Label, { htmlFor: "new-user-email", children: "Email" }),
+        /* @__PURE__ */ jsx(Label, { htmlFor: "new-user-mobile-number", children: "Mobile Number" }),
         /* @__PURE__ */ jsx(
           Input,
           {
-            id: "new-user-email",
-            type: "email",
-            value: form.email,
+            id: "new-user-mobile-number",
+            inputMode: "numeric",
+            maxLength: 11,
+            value: form.mobileNumber,
             placeholder: "Optional",
-            onChange: (e) => setForm((prev) => ({ ...prev, email: e.target.value }))
+            onChange: (e) => setForm((prev) => ({ ...prev, mobileNumber: e.target.value.replace(/\D/g, "").slice(0, 11) }))
           }
         )
       ] }),

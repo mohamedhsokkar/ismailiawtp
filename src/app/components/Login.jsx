@@ -16,7 +16,7 @@ function Login() {
   const [registerForm, setRegisterForm] = useState({
     name: "",
     workID: "",
-    email: "",
+    mobileNumber: "",
     password: "",
     nationalID: "",
     role: "operator"
@@ -117,15 +117,16 @@ function Login() {
           )
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsx(Label, { htmlFor: "register-email", children: "Email" }),
+          /* @__PURE__ */ jsx(Label, { htmlFor: "register-mobile-number", children: "Mobile Number" }),
           /* @__PURE__ */ jsx(
             Input,
             {
-              id: "register-email",
-              type: "email",
+              id: "register-mobile-number",
+              inputMode: "numeric",
+              maxLength: 11,
               placeholder: "Optional",
-              value: registerForm.email,
-              onChange: (e) => setRegisterForm((prev) => ({ ...prev, email: e.target.value }))
+              value: registerForm.mobileNumber,
+              onChange: (e) => setRegisterForm((prev) => ({ ...prev, mobileNumber: e.target.value.replace(/\D/g, "").slice(0, 11) }))
             }
           )
         ] }),

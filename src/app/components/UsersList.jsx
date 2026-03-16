@@ -29,14 +29,14 @@ function UsersList() {
       /* @__PURE__ */ jsx(TableHeader, { children: /* @__PURE__ */ jsxs(TableRow, { children: [
         /* @__PURE__ */ jsx(TableHead, { children: "Name" }),
         /* @__PURE__ */ jsx(TableHead, { children: "Work ID" }),
-        /* @__PURE__ */ jsx(TableHead, { children: "Email" }),
+        /* @__PURE__ */ jsx(TableHead, { children: "Mobile Number" }),
         /* @__PURE__ */ jsx(TableHead, { children: "Role" }),
         /* @__PURE__ */ jsx(TableHead, { children: "National ID" })
       ] }) }),
       /* @__PURE__ */ jsx(TableBody, { children: users.length === 0 ? /* @__PURE__ */ jsx(TableRow, { children: /* @__PURE__ */ jsx(TableCell, { colSpan: 5, className: "text-center py-8 text-gray-500", children: loading ? "Loading users..." : "No users found" }) }) : users.map((user) => /* @__PURE__ */ jsxs(TableRow, { children: [
         /* @__PURE__ */ jsx(TableCell, { children: user.name }),
         /* @__PURE__ */ jsx(TableCell, { children: user.workID ?? "-" }),
-        /* @__PURE__ */ jsx(TableCell, { children: user.email ?? "-" }),
+        /* @__PURE__ */ jsx(TableCell, { children: user.mobileNumber ?? "-" }),
         /* @__PURE__ */ jsx(TableCell, { className: "capitalize", children: user.role }),
         /* @__PURE__ */ jsx(TableCell, { children: user.nationalID ?? "-" })
       ] }, user._id)) })

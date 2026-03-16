@@ -68,7 +68,7 @@ const register = async (payload) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
   });
-  const data = await response.json();
+  const data = await parseApiResponse(response);
   if (!response.ok) {
     throw new Error(data?.error?.[0]?.msg ?? data?.errors?.[0]?.msg ?? "Registration failed");
   }
@@ -110,7 +110,7 @@ const adminCreateUser = async (payload) => {
     headers: getAuthHeaders(),
     body: JSON.stringify(payload)
   });
-  const data = await response.json();
+  const data = await parseApiResponse(response);
   if (!response.ok) {
     throw new Error(data?.error?.[0]?.msg ?? data?.errors?.[0]?.msg ?? data?.msg ?? "Failed to create user");
   }

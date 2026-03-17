@@ -1,4 +1,3 @@
-import { jsx, jsxs } from "react/jsx-runtime";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
@@ -20,29 +19,6 @@ function UsersList() {
     };
     void loadUsers();
   }, []);
-  return /* @__PURE__ */ jsxs(Card, { children: [
-    /* @__PURE__ */ jsxs(CardHeader, { children: [
-      /* @__PURE__ */ jsx(CardTitle, { children: "Users and Roles" }),
-      /* @__PURE__ */ jsx(CardDescription, { children: "All active users in the system" })
-    ] }),
-    /* @__PURE__ */ jsx(CardContent, { children: /* @__PURE__ */ jsx("div", { className: "rounded-md border", children: /* @__PURE__ */ jsxs(Table, { children: [
-      /* @__PURE__ */ jsx(TableHeader, { children: /* @__PURE__ */ jsxs(TableRow, { children: [
-        /* @__PURE__ */ jsx(TableHead, { children: "Name" }),
-        /* @__PURE__ */ jsx(TableHead, { children: "Work ID" }),
-        /* @__PURE__ */ jsx(TableHead, { children: "Mobile Number" }),
-        /* @__PURE__ */ jsx(TableHead, { children: "Role" }),
-        /* @__PURE__ */ jsx(TableHead, { children: "National ID" })
-      ] }) }),
-      /* @__PURE__ */ jsx(TableBody, { children: users.length === 0 ? /* @__PURE__ */ jsx(TableRow, { children: /* @__PURE__ */ jsx(TableCell, { colSpan: 5, className: "text-center py-8 text-gray-500", children: loading ? "Loading users..." : "No users found" }) }) : users.map((user) => /* @__PURE__ */ jsxs(TableRow, { children: [
-        /* @__PURE__ */ jsx(TableCell, { children: user.name }),
-        /* @__PURE__ */ jsx(TableCell, { children: user.workID ?? "-" }),
-        /* @__PURE__ */ jsx(TableCell, { children: user.mobileNumber ?? "-" }),
-        /* @__PURE__ */ jsx(TableCell, { className: "capitalize", children: user.role }),
-        /* @__PURE__ */ jsx(TableCell, { children: user.nationalID ?? "-" })
-      ] }, user._id)) })
-    ] }) }) })
-  ] });
+  return <Card><CardHeader><CardTitle>Users and Roles</CardTitle><CardDescription>All active users in the system</CardDescription></CardHeader><CardContent><div className="rounded-md border"><Table><TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Work ID</TableHead><TableHead>Mobile Number</TableHead><TableHead>Role</TableHead><TableHead>National ID</TableHead></TableRow></TableHeader><TableBody>{users.length === 0 ? <TableRow><TableCell colSpan={5} className="text-center py-8 text-gray-500">{loading ? "Loading users..." : "No users found"}</TableCell></TableRow> : users.map(user => <TableRow key={user._id}><TableCell>{user.name}</TableCell><TableCell>{user.workID ?? "-"}</TableCell><TableCell>{user.mobileNumber ?? "-"}</TableCell><TableCell className="capitalize">{user.role}</TableCell><TableCell>{user.nationalID ?? "-"}</TableCell></TableRow>)}</TableBody></Table></div></CardContent></Card>;
 }
-export {
-  UsersList
-};
+export { UsersList };

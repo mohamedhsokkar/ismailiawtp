@@ -1,4 +1,3 @@
-import { jsx, jsxs } from "react/jsx-runtime";
 import { useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
@@ -15,7 +14,7 @@ function Profile() {
     confirmPassword: ""
   });
   const [loading, setLoading] = useState(false);
-  const handleChangePassword = async (e) => {
+  const handleChangePassword = async e => {
     e.preventDefault();
     if (form.newPassword !== form.confirmPassword) {
       toast.error("New password and confirmation do not match");
@@ -25,102 +24,26 @@ function Profile() {
     try {
       await changePassword(form.currentPassword, form.newPassword);
       toast.success("Password updated successfully");
-      setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+      setForm({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: ""
+      });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Unable to update password");
     } finally {
       setLoading(false);
     }
   };
-  return /* @__PURE__ */ jsxs("div", { className: "p-6 space-y-6", children: [
-    /* @__PURE__ */ jsxs("div", { children: [
-      /* @__PURE__ */ jsx("h1", { children: "Profile" }),
-      /* @__PURE__ */ jsx("p", { className: "text-gray-600 mt-1", children: "View your account information and update password" })
-    ] }),
-    /* @__PURE__ */ jsxs(Tabs, { defaultValue: "info", className: "space-y-6", children: [
-      /* @__PURE__ */ jsx("div", { className: "w-full border-b bg-white", children: /* @__PURE__ */ jsxs(TabsList, { className: "h-11 bg-transparent p-0", children: [
-        /* @__PURE__ */ jsx(TabsTrigger, { value: "info", className: "rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600", children: "My Info" }),
-        /* @__PURE__ */ jsx(TabsTrigger, { value: "password", className: "rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600", children: "Change Password" })
-      ] }) }),
-      /* @__PURE__ */ jsx(TabsContent, { value: "info", children: /* @__PURE__ */ jsxs(Card, { children: [
-        /* @__PURE__ */ jsxs(CardHeader, { children: [
-          /* @__PURE__ */ jsx(CardTitle, { children: "User Information" }),
-          /* @__PURE__ */ jsx(CardDescription, { children: "Your current account details" })
-        ] }),
-        /* @__PURE__ */ jsxs(CardContent, { className: "space-y-4", children: [
-          /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsx(Label, { children: "Name" }),
-            /* @__PURE__ */ jsx(Input, { value: session?.user?.name ?? "", disabled: true })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsx(Label, { children: "Work ID" }),
-            /* @__PURE__ */ jsx(Input, { value: session?.user?.workID?.toString() ?? "", disabled: true })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsx(Label, { children: "Mobile Number" }),
-            /* @__PURE__ */ jsx(Input, { value: session?.user?.mobileNumber ?? "", disabled: true })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsx(Label, { children: "Role" }),
-            /* @__PURE__ */ jsx(Input, { value: session?.user?.role ?? "", disabled: true })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsx(Label, { children: "National ID" }),
-            /* @__PURE__ */ jsx(Input, { value: session?.user?.nationalID?.toString() ?? "", disabled: true })
-          ] })
-        ] })
-      ] }) }),
-      /* @__PURE__ */ jsx(TabsContent, { value: "password", children: /* @__PURE__ */ jsxs(Card, { children: [
-        /* @__PURE__ */ jsxs(CardHeader, { children: [
-          /* @__PURE__ */ jsx(CardTitle, { children: "Change Password" }),
-          /* @__PURE__ */ jsx(CardDescription, { children: "Update your account password" })
-        ] }),
-        /* @__PURE__ */ jsx(CardContent, { children: /* @__PURE__ */ jsxs("form", { onSubmit: handleChangePassword, className: "space-y-4 max-w-xl", children: [
-          /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsx(Label, { htmlFor: "current-password", children: "Current Password" }),
-            /* @__PURE__ */ jsx(
-              Input,
-              {
-                id: "current-password",
-                type: "password",
-                value: form.currentPassword,
-                onChange: (e) => setForm((prev) => ({ ...prev, currentPassword: e.target.value })),
-                required: true
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsx(Label, { htmlFor: "new-password", children: "New Password" }),
-            /* @__PURE__ */ jsx(
-              Input,
-              {
-                id: "new-password",
-                type: "password",
-                value: form.newPassword,
-                onChange: (e) => setForm((prev) => ({ ...prev, newPassword: e.target.value })),
-                required: true
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsx(Label, { htmlFor: "confirm-password", children: "Confirm New Password" }),
-            /* @__PURE__ */ jsx(
-              Input,
-              {
-                id: "confirm-password",
-                type: "password",
-                value: form.confirmPassword,
-                onChange: (e) => setForm((prev) => ({ ...prev, confirmPassword: e.target.value })),
-                required: true
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsx(Button, { type: "submit", disabled: loading, children: loading ? "Updating..." : "Update Password" })
-        ] }) })
-      ] }) })
-    ] })
-  ] });
+  return <div className="p-6 space-y-6"><div><h1>Profile</h1><p className="text-gray-600 mt-1">View your account information and update password</p></div><Tabs defaultValue="info" className="space-y-6"><div className="w-full border-b bg-white"><TabsList className="h-11 bg-transparent p-0"><TabsTrigger value="info" className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600">My Info</TabsTrigger><TabsTrigger value="password" className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600">Change Password</TabsTrigger></TabsList></div><TabsContent value="info"><Card><CardHeader><CardTitle>User Information</CardTitle><CardDescription>Your current account details</CardDescription></CardHeader><CardContent className="space-y-4"><div><Label>Name</Label><Input value={session?.user?.name ?? ""} disabled={true} /></div><div><Label>Work ID</Label><Input value={session?.user?.workID?.toString() ?? ""} disabled={true} /></div><div><Label>Mobile Number</Label><Input value={session?.user?.mobileNumber ?? ""} disabled={true} /></div><div><Label>Role</Label><Input value={session?.user?.role ?? ""} disabled={true} /></div><div><Label>National ID</Label><Input value={session?.user?.nationalID?.toString() ?? ""} disabled={true} /></div></CardContent></Card></TabsContent><TabsContent value="password"><Card><CardHeader><CardTitle>Change Password</CardTitle><CardDescription>Update your account password</CardDescription></CardHeader><CardContent><form onSubmit={handleChangePassword} className="space-y-4 max-w-xl"><div className="space-y-2"><Label htmlFor="current-password">Current Password</Label><Input id="current-password" type="password" value={form.currentPassword} onChange={e => setForm(prev => ({
+                  ...prev,
+                  currentPassword: e.target.value
+                }))} required={true} /></div><div className="space-y-2"><Label htmlFor="new-password">New Password</Label><Input id="new-password" type="password" value={form.newPassword} onChange={e => setForm(prev => ({
+                  ...prev,
+                  newPassword: e.target.value
+                }))} required={true} /></div><div className="space-y-2"><Label htmlFor="confirm-password">Confirm New Password</Label><Input id="confirm-password" type="password" value={form.confirmPassword} onChange={e => setForm(prev => ({
+                  ...prev,
+                  confirmPassword: e.target.value
+                }))} required={true} /></div><Button type="submit" disabled={loading}>{loading ? "Updating..." : "Update Password"}</Button></form></CardContent></Card></TabsContent></Tabs></div>;
 }
-export {
-  Profile
-};
+export { Profile };

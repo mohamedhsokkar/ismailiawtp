@@ -3,7 +3,8 @@ import path from "path";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 var stdin_default = defineConfig({
-  base: "/ismailiawtp/",
+  // Custom domains must serve assets from the site root.
+  base: "/",
   plugins: [
     // The React and Tailwind plugins are both required for Make, even if
     // Tailwind is not being actively used – do not remove them

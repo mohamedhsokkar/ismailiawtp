@@ -16,13 +16,17 @@ import {
 import { createIssue, getIssues, updateIssue } from "../lib/auth";
 import { toast } from "sonner";
 
-const initialCreateForm = {
+const LOCATION_ORDER = ["Mashroat", "CTE", "Bamag1", "Bamag2"];
+
+const getTodayDate = () => new Date().toISOString().split("T")[0];
+
+const getInitialCreateForm = () => ({
   description: "",
   location: "Mashroat",
-  dateOfOccurance: "",
+  dateOfOccurance: getTodayDate(),
   dateOfFix: "",
   status: "open"
-};
+});
 
 function Issues() {
   const [issues, setIssues] = useState([]);
@@ -30,7 +34,7 @@ function Issues() {
 
   const [createOpen, setCreateOpen] = useState(false);
   const [createSubmitting, setCreateSubmitting] = useState(false);
-  const [createForm, setCreateForm] = useState(initialCreateForm);
+  const [createForm, setCreateForm] = useState(getInitialCreateForm);
 
   const [closeOpen, setCloseOpen] = useState(false);
   const [closeSubmitting, setCloseSubmitting] = useState(false);
@@ -41,6 +45,30 @@ function Issues() {
     () => issues.filter((issue) => issue.status !== "closed"),
     [issues]
   );
+
+  const groupedActiveIssues = useMemo(() => {
+    const grouped = activeIssues.reduce((acc, issue) => {
+      const location = issue.location || "Unassigned";
+      if (!acc[location]) {
+        acc[location] = [];
+      }
+      acc[location].push(issue);
+      return acc;
+    }, {});
+
+    return Object.entries(grouped).sort(([left], [right]) => {
+      const leftIndex = LOCATION_ORDER.indexOf(left);
+      const rightIndex = LOCATION_ORDER.indexOf(right);
+      const normalizedLeft = leftIndex === -1 ? Number.MAX_SAFE_INTEGER : leftIndex;
+      const normalizedRight = rightIndex === -1 ? Number.MAX_SAFE_INTEGER : rightIndex;
+
+      if (normalizedLeft !== normalizedRight) {
+        return normalizedLeft - normalizedRight;
+      }
+
+      return left.localeCompare(right);
+    });
+  }, [activeIssues]);
 
   useEffect(() => {
     const loadIssues = async () => {
@@ -57,7 +85,7 @@ function Issues() {
   }, []);
 
   const resetCreateForm = () => {
-    setCreateForm(initialCreateForm);
+    setCreateForm(getInitialCreateForm());
   };
 
   const openCloseModal = (issue) => {
@@ -157,28 +185,35 @@ function Issues() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {activeIssues.length === 0 ? (
+                {groupedActiveIssues.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center py-8 text-gray-500">
                       {loading ? "Loading issues..." : "No open issues found"}
                     </TableCell>
                   </TableRow>
                 ) : (
-                  activeIssues.map((issue) => (
-                    <TableRow
-                      key={issue._id}
-                      className="cursor-pointer hover:bg-gray-50"
-                      onClick={() => openCloseModal(issue)}
-                    >
-                      <TableCell>{issue.faultID ?? "-"}</TableCell>
-                      <TableCell>{issue.description}</TableCell>
-                      <TableCell>{issue.location}</TableCell>
-                      <TableCell className="capitalize">{issue.status?.replace("_", " ") ?? "-"}</TableCell>
-                      <TableCell>
-                        {issue.dateOfOccurance ? new Date(issue.dateOfOccurance).toLocaleDateString("en-GB") : "-"}
+                  groupedActiveIssues.flatMap(([location, locationIssues]) => [
+                    <TableRow key={`group-${location}`} className="bg-slate-50 hover:bg-slate-50">
+                      <TableCell colSpan={5} className="font-semibold">
+                        {location}
                       </TableCell>
-                    </TableRow>
-                  ))
+                    </TableRow>,
+                    ...locationIssues.map((issue) => (
+                      <TableRow
+                        key={issue._id}
+                        className="cursor-pointer hover:bg-gray-50"
+                        onClick={() => openCloseModal(issue)}
+                      >
+                        <TableCell>{issue.faultID ?? "-"}</TableCell>
+                        <TableCell>{issue.description}</TableCell>
+                        <TableCell>{issue.location}</TableCell>
+                        <TableCell className="capitalize">{issue.status?.replace("_", " ") ?? "-"}</TableCell>
+                        <TableCell>
+                          {issue.dateOfOccurance ? new Date(issue.dateOfOccurance).toLocaleDateString("en-GB") : "-"}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ])
                 )}
               </TableBody>
             </Table>
@@ -224,7 +259,14 @@ function Issues() {
               <select
                 id="issue-status"
                 value={createForm.status}
-                onChange={(e) => setCreateForm((prev) => ({ ...prev, status: e.target.value }))}
+                onChange={(e) => {
+                  const nextStatus = e.target.value;
+                  setCreateForm((prev) => ({
+                    ...prev,
+                    status: nextStatus,
+                    dateOfFix: nextStatus === "closed" ? prev.dateOfFix : ""
+                  }));
+                }}
                 className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               >
                 <option value="open">Open</option>
@@ -252,6 +294,7 @@ function Issues() {
                 type="date"
                 value={createForm.dateOfFix}
                 onChange={(e) => setCreateForm((prev) => ({ ...prev, dateOfFix: e.target.value }))}
+                disabled={createForm.status !== "closed"}
               />
             </div>
           </div>

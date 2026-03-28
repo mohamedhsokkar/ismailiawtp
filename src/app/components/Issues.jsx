@@ -175,7 +175,7 @@ function Issues() {
                       <TableCell>{issue.location}</TableCell>
                       <TableCell className="capitalize">{issue.status?.replace("_", " ") ?? "-"}</TableCell>
                       <TableCell>
-                        {issue.dateOfOccurance ? new Date(issue.dateOfOccurance).toLocaleDateString() : "-"}
+                        {issue.dateOfOccurance ? new Date(issue.dateOfOccurance).toLocaleDateString("en-GB") : "-"}
                       </TableCell>
                     </TableRow>
                   ))

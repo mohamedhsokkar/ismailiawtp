@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Printer } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { Input } from "./ui/input";
@@ -17,8 +17,30 @@ import { createIssue, getIssues, updateIssue } from "../lib/auth";
 import { toast } from "sonner";
 
 const LOCATION_ORDER = ["Mashroat", "CTE", "Bamag1", "Bamag2"];
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 const getTodayDate = () => new Date().toISOString().split("T")[0];
+
+const getDaysSinceOccurrence = (dateValue) => {
+  if (!dateValue) {
+    return "-";
+  }
+
+  const occurrenceDate = new Date(dateValue);
+  if (Number.isNaN(occurrenceDate.getTime())) {
+    return "-";
+  }
+
+  const today = new Date();
+  const normalizedToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const normalizedOccurrence = new Date(
+    occurrenceDate.getFullYear(),
+    occurrenceDate.getMonth(),
+    occurrenceDate.getDate()
+  );
+
+  return Math.max(0, Math.floor((normalizedToday - normalizedOccurrence) / MS_PER_DAY));
+};
 
 const getInitialCreateForm = () => ({
   description: "",
@@ -154,6 +176,10 @@ function Issues() {
     }
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
     <div className="p-6">
       <Card>
@@ -173,28 +199,34 @@ function Issues() {
         </CardHeader>
 
         <CardContent className="space-y-4">
+          <div className="flex justify-end">
+            <Button type="button" onClick={handlePrint} className="gap-2">
+              <Printer className="w-4 h-4" />
+              Print
+            </Button>
+          </div>
+
           <div className="rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>Days</TableHead>
                   <TableHead>Fault ID</TableHead>
                   <TableHead>Description</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Status</TableHead>
                   <TableHead>Occurred</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {groupedActiveIssues.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                    <TableCell colSpan={4} className="text-center py-8 text-gray-500">
                       {loading ? "Loading issues..." : "No open issues found"}
                     </TableCell>
                   </TableRow>
                 ) : (
                   groupedActiveIssues.flatMap(([location, locationIssues]) => [
                     <TableRow key={`group-${location}`} className="bg-slate-50 hover:bg-slate-50">
-                      <TableCell colSpan={5} className="font-semibold">
+                      <TableCell colSpan={4} className="font-semibold">
                         {location}
                       </TableCell>
                     </TableRow>,
@@ -204,10 +236,9 @@ function Issues() {
                         className="cursor-pointer hover:bg-gray-50"
                         onClick={() => openCloseModal(issue)}
                       >
+                        <TableCell>{getDaysSinceOccurrence(issue.dateOfOccurance)}</TableCell>
                         <TableCell>{issue.faultID ?? "-"}</TableCell>
                         <TableCell>{issue.description}</TableCell>
-                        <TableCell>{issue.location}</TableCell>
-                        <TableCell className="capitalize">{issue.status?.replace("_", " ") ?? "-"}</TableCell>
                         <TableCell>
                           {issue.dateOfOccurance ? new Date(issue.dateOfOccurance).toLocaleDateString("en-GB") : "-"}
                         </TableCell>

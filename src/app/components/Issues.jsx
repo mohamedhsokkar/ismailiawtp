@@ -202,7 +202,7 @@ function Issues() {
           <div className="flex justify-end">
             <Button type="button" onClick={handlePrint} className="gap-2">
               <Printer className="w-4 h-4" />
-              Print
+              طباعة
             </Button>
           </div>
 
@@ -210,10 +210,10 @@ function Issues() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Days</TableHead>
-                  <TableHead>Fault ID</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Occurred</TableHead>
+                  <TableHead>م</TableHead>
+                  <TableHead>عدد الايام</TableHead>
+                  <TableHead>وصف العطل</TableHead>
+                  <TableHead>تاريخ</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -236,8 +236,9 @@ function Issues() {
                         className="cursor-pointer hover:bg-gray-50"
                         onClick={() => openCloseModal(issue)}
                       >
-                        <TableCell>{getDaysSinceOccurrence(issue.dateOfOccurance)}</TableCell>
                         <TableCell>{issue.faultID ?? "-"}</TableCell>
+                        <TableCell>{getDaysSinceOccurrence(issue.dateOfOccurance)}</TableCell>
+
                         <TableCell>{issue.description}</TableCell>
                         <TableCell>
                           {issue.dateOfOccurance ? new Date(issue.dateOfOccurance).toLocaleDateString("en-GB") : "-"}
@@ -353,12 +354,12 @@ function Issues() {
           <DialogHeader>
             <DialogTitle>Close Issue</DialogTitle>
             <DialogDescription>
-              {selectedIssue ? `Set fix date for ${selectedIssue.faultID ?? "selected issue"}.` : "Set fix date."}
+              {selectedIssue ? `Set fix date for ${selectedIssue.description ?? "selected issue"}.` : "Set fix date."}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-2">
-            <Label htmlFor="close-issue-fix-date">Fix Date</Label>
+            <Label htmlFor="close-issue-fix-date">تاريخ اصلاح العطل</Label>
             <Input
               id="close-issue-fix-date"
               type="date"

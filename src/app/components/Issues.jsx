@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { Plus, Printer } from "lucide-react";
-import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { Input } from "./ui/input";
@@ -16,6 +14,7 @@ import {
   DialogTitle
 } from "./ui/dialog";
 import { createIssue, getIssues, updateIssue } from "../lib/auth";
+import { generateIssuesPdfReport } from "../lib/issuesPdfReport";
 import { toast } from "sonner";
 
 const LOCATION_ORDER = ["Mashroat", "CTE", "Bamag1", "Bamag2"];
@@ -77,6 +76,7 @@ function Issues() {
   const [closeSubmitting, setCloseSubmitting] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState(null);
   const [closeDateOfFix, setCloseDateOfFix] = useState("");
+  const [printSubmitting, setPrintSubmitting] = useState(false);
 
   const activeIssues = useMemo(
     () => issues.filter((issue) => issue.status !== "closed"),
@@ -191,127 +191,21 @@ function Issues() {
     }
   };
 
-  const handlePrint = () => {
-    const doc = new jsPDF({
-      orientation: "p",
-      unit: "mm",
-      format: "a4"
-    });
-
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const reportDate = new Date().toLocaleDateString("en-GB");
-    const body = [];
-
-    groupedActiveIssues.forEach(([location, locationIssues]) => {
-      locationIssues.forEach((issue, index) => {
-        const row = [];
-
-        if (index === 0) {
-          row.push({
-            content: location,
-            rowSpan: locationIssues.length,
-            styles: {
-              halign: "center",
-              valign: "middle",
-              fontStyle: "bold"
-            }
-          });
-        }
-
-        row.push(issue.faultID ?? "-");
-        row.push(String(getDaysSinceOccurrence(issue.dateOfOccurance)));
-        row.push(issue.description?.trim() || "-");
-        row.push(formatDisplayDate(issue.dateOfOccurance));
-
-        body.push(row);
+  const handlePrint = async () => {
+    setPrintSubmitting(true);
+    try {
+      await generateIssuesPdfReport({
+        activeIssues,
+        groupedActiveIssues,
+        loading,
+        getDaysSinceOccurrence,
+        formatDisplayDate
       });
-    });
-
-    if (body.length === 0) {
-      body.push([
-        {
-          content: loading ? "Loading issues..." : "No open issues found",
-          colSpan: 5,
-          styles: {
-            halign: "center"
-          }
-        }
-      ]);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to generate PDF report");
+    } finally {
+      setPrintSubmitting(false);
     }
-
-    doc.setFontSize(15);
-    doc.text("Ismailia Water Treatment Plant", 14, 12);
-
-    doc.setFontSize(13);
-    doc.text("Open Issues Report", 14, 19);
-
-    doc.setFontSize(10);
-    doc.text(`Date: ${reportDate}`, 14, 25);
-    doc.text(`Total Open Issues: ${activeIssues.length}`, pageWidth - 58, 25);
-
-    autoTable(doc, {
-      startY: 30,
-      head: [["Location", "ID", "Days", "Description", "Date"]],
-      body,
-      theme: "grid",
-      margin: { top: 30, right: 14, bottom: 35, left: 14 },
-      pageBreak: "auto",
-      rowPageBreak: "avoid",
-      showHead: "everyPage",
-      styles: {
-        fontSize: 9,
-        cellPadding: 2,
-        overflow: "linebreak",
-        valign: "middle",
-        lineWidth: 0.1,
-        lineColor: [180, 180, 180],
-        textColor: [0, 0, 0]
-      },
-      headStyles: {
-        fontStyle: "bold",
-        halign: "center",
-        valign: "middle",
-        fillColor: [240, 240, 240],
-        textColor: [0, 0, 0],
-        lineWidth: 0.15,
-        lineColor: [120, 120, 120]
-      },
-      columnStyles: {
-        0: { cellWidth: 28, halign: "center" },
-        1: { cellWidth: 18, halign: "center" },
-        2: { cellWidth: 18, halign: "center" },
-        3: { cellWidth: 90, halign: "left" },
-        4: { cellWidth: 28, halign: "center" }
-      },
-      tableLineWidth: 0.2,
-      tableLineColor: [80, 80, 80],
-      didDrawPage: () => {
-        const currentPageWidth = doc.internal.pageSize.getWidth();
-        const currentPageHeight = doc.internal.pageSize.getHeight();
-
-        doc.setFontSize(9);
-        doc.text("Maintenance Department", 14, currentPageHeight - 10);
-        doc.text(`Page ${doc.getNumberOfPages()}`, currentPageWidth - 25, currentPageHeight - 10);
-      }
-    });
-
-    const finalY = doc.lastAutoTable?.finalY ?? 30;
-
-    if (finalY > pageHeight - 45) {
-      doc.addPage();
-    }
-
-    const signaturePageHeight = doc.internal.pageSize.getHeight();
-
-    doc.setFontSize(10);
-    doc.line(20, signaturePageHeight - 25, 80, signaturePageHeight - 25);
-    doc.line(120, signaturePageHeight - 25, 180, signaturePageHeight - 25);
-
-    doc.text("Prepared By", 35, signaturePageHeight - 20);
-    doc.text("Reviewed By", 135, signaturePageHeight - 20);
-
-    doc.save(`open-issues-report-${reportDate.replaceAll("/", "-")}.pdf`);
   };
 
   return (
@@ -334,9 +228,14 @@ function Issues() {
 
         <CardContent className="space-y-4">
           <div className="flex justify-end">
-            <Button type="button" onClick={handlePrint} className="gap-2">
+            <Button
+              type="button"
+              onClick={() => void handlePrint()}
+              className="gap-2"
+              disabled={printSubmitting}
+            >
               <Printer className="w-4 h-4" />
-              طباعة
+              {printSubmitting ? "Generating PDF..." : "طباعة"}
             </Button>
           </div>
 
@@ -344,10 +243,10 @@ function Issues() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>م</TableHead>
-                  <TableHead>عدد الايام</TableHead>
-                  <TableHead>وصف العطل</TableHead>
-                  <TableHead>تاريخ</TableHead>
+                  <TableHead>Ù…</TableHead>
+                  <TableHead>Ø¹Ø¯Ø¯ Ø§Ù„Ø§ÙŠØ§Ù…</TableHead>
+                  <TableHead>ÙˆØµÙ Ø§Ù„Ø¹Ø·Ù„</TableHead>
+                  <TableHead>ØªØ§Ø±ÙŠØ®</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -493,7 +392,7 @@ function Issues() {
           </DialogHeader>
 
           <div className="space-y-2">
-            <Label htmlFor="close-issue-fix-date">تاريخ اصلاح العطل</Label>
+            <Label htmlFor="close-issue-fix-date">ØªØ§Ø±ÙŠØ® Ø§ØµÙ„Ø§Ø­ Ø§Ù„Ø¹Ø·Ù„</Label>
             <Input
               id="close-issue-fix-date"
               type="date"

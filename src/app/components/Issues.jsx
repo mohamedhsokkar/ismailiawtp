@@ -235,7 +235,7 @@ function Issues() {
               disabled={printSubmitting}
             >
               <Printer className="w-4 h-4" />
-              {printSubmitting ? "Generating PDF..." : "طباعة"}
+              {printSubmitting ? "Generating PDF..." : "\u0637\u0628\u0627\u0639\u0629"}
             </Button>
           </div>
 
@@ -243,10 +243,10 @@ function Issues() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Ù…</TableHead>
-                  <TableHead>Ø¹Ø¯Ø¯ Ø§Ù„Ø§ÙŠØ§Ù…</TableHead>
-                  <TableHead>ÙˆØµÙ Ø§Ù„Ø¹Ø·Ù„</TableHead>
-                  <TableHead>ØªØ§Ø±ÙŠØ®</TableHead>
+                  <TableHead>{"\u0631\u0642\u0645"}</TableHead>
+                  <TableHead>{"\u0639\u062f\u062f \u0627\u0644\u0623\u064a\u0627\u0645"}</TableHead>
+                  <TableHead>{"\u0648\u0635\u0641 \u0627\u0644\u0639\u0637\u0644"}</TableHead>
+                  <TableHead>{"\u062a\u0627\u0631\u064a\u062e"}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -271,11 +271,8 @@ function Issues() {
                       >
                         <TableCell>{issue.faultID ?? "-"}</TableCell>
                         <TableCell>{getDaysSinceOccurrence(issue.dateOfOccurance)}</TableCell>
-
                         <TableCell>{issue.description}</TableCell>
-                        <TableCell>
-                          {formatDisplayDate(issue.dateOfOccurance)}
-                        </TableCell>
+                        <TableCell>{formatDisplayDate(issue.dateOfOccurance)}</TableCell>
                       </TableRow>
                     ))
                   ])
@@ -392,7 +389,7 @@ function Issues() {
           </DialogHeader>
 
           <div className="space-y-2">
-            <Label htmlFor="close-issue-fix-date">ØªØ§Ø±ÙŠØ® Ø§ØµÙ„Ø§Ø­ Ø§Ù„Ø¹Ø·Ù„</Label>
+            <Label htmlFor="close-issue-fix-date">{"\u062a\u0627\u0631\u064a\u062e \u0625\u0635\u0644\u0627\u062d \u0627\u0644\u0639\u0637\u0644"}</Label>
             <Input
               id="close-issue-fix-date"
               type="date"

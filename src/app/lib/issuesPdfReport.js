@@ -120,14 +120,39 @@ const buildReportMarkup = ({
 const createReportContainer = (markup) => {
   const container = document.createElement("div");
   container.setAttribute("aria-hidden", "true");
-  container.style.position = "fixed";
-  container.style.left = "-10000px";
-  container.style.top = "0";
-  container.style.width = `${A4_WIDTH_PX}px`;
-  container.style.background = "#ffffff";
-  container.style.zIndex = "-1";
+  container.style.cssText = [
+    "all: initial",
+    "position: fixed",
+    "left: -10000px",
+    "top: 0",
+    `width: ${A4_WIDTH_PX}px`,
+    "display: block",
+    "background: #ffffff",
+    "color: #111827",
+    "font-family: Arial, sans-serif",
+    "z-index: -1"
+  ].join("; ");
   container.innerHTML = `
     <style>
+      .issues-report-sandbox,
+      .issues-report-sandbox * {
+        box-sizing: border-box;
+        color: #111827;
+        border-color: #8b8b8b;
+        text-shadow: none;
+        box-shadow: none;
+        outline-color: #111827;
+      }
+
+      .issues-report-sandbox {
+        all: initial;
+        display: block;
+        width: ${A4_WIDTH_PX}px;
+        background: #ffffff;
+        color: #111827;
+        font-family: Arial, sans-serif;
+      }
+
       .issues-report {
         width: ${A4_WIDTH_PX}px;
         box-sizing: border-box;
@@ -243,7 +268,9 @@ const createReportContainer = (markup) => {
         margin-bottom: 8px;
       }
     </style>
-    ${markup}
+    <div class="issues-report-sandbox">
+      ${markup}
+    </div>
   `;
 
   document.body.appendChild(container);
@@ -292,7 +319,23 @@ export const generateIssuesPdfReport = async ({
       html2canvas: {
         backgroundColor: "#ffffff",
         scale: 0.8,
-        useCORS: true
+        useCORS: true,
+        onclone: (clonedDocument) => {
+          clonedDocument.querySelectorAll('link[rel="stylesheet"], style').forEach((node) => {
+            const source = node.tagName === "LINK"
+              ? node.getAttribute("href") ?? ""
+              : node.textContent ?? "";
+
+            if (!source.toLowerCase().includes("amiri")) {
+              node.remove();
+            }
+          });
+
+          if (clonedDocument.body) {
+            clonedDocument.body.style.background = "#ffffff";
+            clonedDocument.body.style.color = "#111827";
+          }
+        }
       }
     });
 

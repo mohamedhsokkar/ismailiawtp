@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Plus, Printer } from "lucide-react";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { Input } from "./ui/input";
@@ -20,6 +22,19 @@ const LOCATION_ORDER = ["Mashroat", "CTE", "Bamag1", "Bamag2"];
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 const getTodayDate = () => new Date().toISOString().split("T")[0];
+
+const formatDisplayDate = (dateValue) => {
+  if (!dateValue) {
+    return "-";
+  }
+
+  const parsedDate = new Date(dateValue);
+  if (Number.isNaN(parsedDate.getTime())) {
+    return "-";
+  }
+
+  return parsedDate.toLocaleDateString("en-GB");
+};
 
 const getDaysSinceOccurrence = (dateValue) => {
   if (!dateValue) {
@@ -177,7 +192,126 @@ function Issues() {
   };
 
   const handlePrint = () => {
-    window.print();
+    const doc = new jsPDF({
+      orientation: "p",
+      unit: "mm",
+      format: "a4"
+    });
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const reportDate = new Date().toLocaleDateString("en-GB");
+    const body = [];
+
+    groupedActiveIssues.forEach(([location, locationIssues]) => {
+      locationIssues.forEach((issue, index) => {
+        const row = [];
+
+        if (index === 0) {
+          row.push({
+            content: location,
+            rowSpan: locationIssues.length,
+            styles: {
+              halign: "center",
+              valign: "middle",
+              fontStyle: "bold"
+            }
+          });
+        }
+
+        row.push(issue.faultID ?? "-");
+        row.push(String(getDaysSinceOccurrence(issue.dateOfOccurance)));
+        row.push(issue.description?.trim() || "-");
+        row.push(formatDisplayDate(issue.dateOfOccurance));
+
+        body.push(row);
+      });
+    });
+
+    if (body.length === 0) {
+      body.push([
+        {
+          content: loading ? "Loading issues..." : "No open issues found",
+          colSpan: 5,
+          styles: {
+            halign: "center"
+          }
+        }
+      ]);
+    }
+
+    doc.setFontSize(15);
+    doc.text("Ismailia Water Treatment Plant", 14, 12);
+
+    doc.setFontSize(13);
+    doc.text("Open Issues Report", 14, 19);
+
+    doc.setFontSize(10);
+    doc.text(`Date: ${reportDate}`, 14, 25);
+    doc.text(`Total Open Issues: ${activeIssues.length}`, pageWidth - 58, 25);
+
+    autoTable(doc, {
+      startY: 30,
+      head: [["Location", "ID", "Days", "Description", "Date"]],
+      body,
+      theme: "grid",
+      margin: { top: 30, right: 14, bottom: 35, left: 14 },
+      pageBreak: "auto",
+      rowPageBreak: "avoid",
+      showHead: "everyPage",
+      styles: {
+        fontSize: 9,
+        cellPadding: 2,
+        overflow: "linebreak",
+        valign: "middle",
+        lineWidth: 0.1,
+        lineColor: [180, 180, 180],
+        textColor: [0, 0, 0]
+      },
+      headStyles: {
+        fontStyle: "bold",
+        halign: "center",
+        valign: "middle",
+        fillColor: [240, 240, 240],
+        textColor: [0, 0, 0],
+        lineWidth: 0.15,
+        lineColor: [120, 120, 120]
+      },
+      columnStyles: {
+        0: { cellWidth: 28, halign: "center" },
+        1: { cellWidth: 18, halign: "center" },
+        2: { cellWidth: 18, halign: "center" },
+        3: { cellWidth: 90, halign: "left" },
+        4: { cellWidth: 28, halign: "center" }
+      },
+      tableLineWidth: 0.2,
+      tableLineColor: [80, 80, 80],
+      didDrawPage: () => {
+        const currentPageWidth = doc.internal.pageSize.getWidth();
+        const currentPageHeight = doc.internal.pageSize.getHeight();
+
+        doc.setFontSize(9);
+        doc.text("Maintenance Department", 14, currentPageHeight - 10);
+        doc.text(`Page ${doc.getNumberOfPages()}`, currentPageWidth - 25, currentPageHeight - 10);
+      }
+    });
+
+    const finalY = doc.lastAutoTable?.finalY ?? 30;
+
+    if (finalY > pageHeight - 45) {
+      doc.addPage();
+    }
+
+    const signaturePageHeight = doc.internal.pageSize.getHeight();
+
+    doc.setFontSize(10);
+    doc.line(20, signaturePageHeight - 25, 80, signaturePageHeight - 25);
+    doc.line(120, signaturePageHeight - 25, 180, signaturePageHeight - 25);
+
+    doc.text("Prepared By", 35, signaturePageHeight - 20);
+    doc.text("Reviewed By", 135, signaturePageHeight - 20);
+
+    doc.save(`open-issues-report-${reportDate.replaceAll("/", "-")}.pdf`);
   };
 
   return (
@@ -241,7 +375,7 @@ function Issues() {
 
                         <TableCell>{issue.description}</TableCell>
                         <TableCell>
-                          {issue.dateOfOccurance ? new Date(issue.dateOfOccurance).toLocaleDateString("en-GB") : "-"}
+                          {formatDisplayDate(issue.dateOfOccurance)}
                         </TableCell>
                       </TableRow>
                     ))

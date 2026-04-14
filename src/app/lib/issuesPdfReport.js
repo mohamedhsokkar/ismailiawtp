@@ -321,7 +321,7 @@ export const generateIssuesPdfReport = async ({
         scale: 0.8,
         useCORS: true,
         onclone: (clonedDocument) => {
-          clonedDocument.querySelectorAll('link[rel="stylesheet"], style').forEach((node) => {
+          clonedDocument.head?.querySelectorAll('link[rel="stylesheet"], style').forEach((node) => {
             const source = node.tagName === "LINK"
               ? node.getAttribute("href") ?? ""
               : node.textContent ?? "";
